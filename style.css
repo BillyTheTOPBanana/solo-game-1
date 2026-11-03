@@ -1,3 +1,7 @@
+:root {
+    --LETTER-SIZE: 60px;
+}
+
 * {
     box-sizing: border-box;
 }
@@ -5,8 +9,56 @@
 body {
     margin: 0;
     padding: 0;
+
+    text-align: center;
 }
 
-.setup-test {
-    background-color: lavender;
+.centering {
+    display: flex;
+    justify-content: center;
+}
+
+.letter {
+    display: box;
+    height: var(--LETTER-SIZE);
+    width: var(--LETTER-SIZE);
+    font-size: 42px;
+
+    background-color: hsl(210, 100%, 98%);;
+}
+
+.typed-letter {    
+    background-color: hsl(210, 100%, 90%);
+}
+
+.banked-letter {
+    background-color: hsl(210, 100%, 40%);
+}
+
+.typed-letter.banked-letter {
+    background-color: hsl(210, 100%, 50%);
+}
+
+#letter-container {
+    display: flex;
+    flex-flow: row wrap;
+    width: 200px;
+    justify-content: center;
+
+    margin-bottom: 40px;
+}
+
+#submit-word {
+    font-size: 48px;
+
+    margin-bottom: 40px;
+}
+
+#typing-area {
+    font-size: 60px;
+    height: 100px;
+}
+
+#debug-print {
+    color: red;
 }
