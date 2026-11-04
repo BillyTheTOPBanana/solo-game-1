@@ -1,15 +1,10 @@
+@import "imports/reset.css";
+
 :root {
     --LETTER-SIZE: 60px;
 }
 
-* {
-    box-sizing: border-box;
-}
-
 body {
-    margin: 0;
-    padding: 0;
-
     text-align: center;
 }
 
@@ -37,6 +32,10 @@ body {
 
 .typed-letter.banked-letter {
     background-color: hsl(210, 100%, 50%);
+}
+
+#game-title {
+    margin-bottom: 20px;
 }
 
 #letter-container {
