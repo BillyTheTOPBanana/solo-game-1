@@ -4,10 +4,16 @@ const letter_container = document.querySelector("#letter-container");
 const submit_button    = document.querySelector("#submit-word");
 const typing_area      = document.querySelector("#typing-area");
 const debug_print_area = document.querySelector("#debug-print");
+const word_list        = document.querySelector("#word-list-container ul");
 let letters; // Array
+
+let used_words = [];
+
 init();
 
 function init() {
+    used_words = [];
+
     for (let i = 0; i < NUMBER_OF_LETTERS; ++i) {
         const letter_button = document.createElement("button");
         letter_button.classList.add("letter");
@@ -40,7 +46,7 @@ function init() {
             Else, choose the first banked of this letter.
         Else, do nothing.
         */
-        const letter_matches = letters.filter( (node) => node.textContent === e.key.toUpperCase());
+        const letter_matches = letters.filter( (node) => node.textContent.toUpperCase() === e.key.toUpperCase());
 
         const first_unbanked = letter_matches.find( (node) => !node.classList.contains("banked-letter"));
         if (first_unbanked) {
@@ -72,8 +78,27 @@ function activate_letter(letter) {
 }
 
 function submit_word() {
-    debug_print("word submitted: " + typing_area.textContent);
+    const new_word = typing_area.textContent;
+    typing_area.textContent = "";
+
+    if (used_words.includes(new_word)) {
+        debug_print(`${new_word} already used!`);
+        letters.forEach( (letter) => letter.classList.remove("typed-letter") );
+        
+        return;
+    }
     
+    debug_print("word submitted: " + new_word);
+
+    used_words.unshift(new_word);
+    const new_li = document.createElement("li");
+    new_li.textContent = new_word;
+    const first_li = word_list.firstChild;
+    if (first_li === null)
+        word_list.appendChild(new_li);
+    else
+        word_list.insertBefore(new_li, first_li);
+
     for (const letter of letters) {
         if (letter.classList.contains("typed-letter"))
             letter.classList.replace("typed-letter", "banked-letter");        
@@ -83,8 +108,6 @@ function submit_word() {
         debug_print("WONK!");
         letters.forEach( letter => letter.classList.remove("banked-letter"));
     }
-
-    typing_area.textContent = "";
 }
 
 function debug_print(str) {
