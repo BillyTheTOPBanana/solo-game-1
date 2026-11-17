@@ -1,5 +1,8 @@
 const NUMBER_OF_LETTERS = 12;
 
+// Weights are letter frequencies (as found in texts, not the dicitonary) found on Wikipedia: https://en.wikipedia.org/wiki/Letter_frequency
+const letter_weights = {A: 0.082, B: 0.015, C: 0.028, D: 0.043, E: 0.127, F: 0.022, G: 0.02, H: 0.061, I: 0.07, J: 0.0016, K: 0.0077, L: 0.04, M: 0.024, N: 0.067, O: 0.075, P: 0.019, Q: 0.0012, R: 0.06, S: 0.063, T: 0.091, U: 0.028, V: 0.0098, W: 0.024, X: 0.0015, Y: 0.02, Z: 0.00074};
+
 const letter_container = document.querySelector("#letter-container");
 const submit_button    = document.querySelector("#submit-word");
 const backspace_button = document.querySelector("#backspace");
@@ -7,8 +10,8 @@ const clear_button     = document.querySelector("#clear-word");
 const typing_area      = document.querySelector("#typing-area");
 const debug_print_area = document.querySelector("#debug-print");
 const word_list        = document.querySelector("#word-list-container ul");
-let letter_nodes; // Array
 
+let letter_nodes; // Array
 let used_words = [];
 
 init();
@@ -20,8 +23,8 @@ function init() {
         const letter_button = document.createElement("button");
         letter_button.classList.add("letter");
     
-        const random_ascii_capital = Math.floor(Math.random()*26) + 65; // ASCII 65 is A
-        letter_button.textContent = String.fromCharCode(random_ascii_capital);
+        const random_letter = random_weighted_selection(letter_weights);
+        letter_button.textContent = random_letter;
     
         letter_button.addEventListener("click", (e) => activate_letter_node(e.target) );
         letter_container.appendChild(letter_button);
@@ -150,4 +153,27 @@ function backspace() {
 function debug_print(str) {
     console.log("debug_print:", str);
     debug_print_area.textContent = str.toString();
+}
+
+
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
+// Functions below this line are written to be re-useable.
+// Early in the next course, TOP will teach how to import/export with modules.
+// Until then, I will just include everything in one file.
+// ------------------------------------------------------------------------------
+
+function random_weighted_selection(weights) {
+    // The argument `weights` should be an object where all of the values are numbers.
+    // Randomly return one of the keys, using the values as probabilistic weights.
+    // The weight values need not add to 1, but they should be non-negative.
+    
+    total_weight = Object.values(weights).reduce( (sum, next) => sum += next, 0);
+    rand = Math.random() * total_weight;
+    for (const key of Object.keys(weights)) {
+        if (rand < weights[key])
+            return key;
+        rand -= weights[key];
+    }
 }
