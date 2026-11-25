@@ -3,6 +3,12 @@ const NUMBER_OF_LETTERS = 12;
 // Weights are letter frequencies (as found in texts, not the dicitonary) found on Wikipedia: https://en.wikipedia.org/wiki/Letter_frequency
 const letter_weights = {A: 0.082, B: 0.015, C: 0.028, D: 0.043, E: 0.127, F: 0.022, G: 0.02, H: 0.061, I: 0.07, J: 0.0016, K: 0.0077, L: 0.04, M: 0.024, N: 0.067, O: 0.075, P: 0.019, Q: 0.0012, R: 0.06, S: 0.063, T: 0.091, U: 0.028, V: 0.0098, W: 0.024, X: 0.0015, Y: 0.02, Z: 0.00074};
 
+// Create function get_rand() using today's date as the seed.
+// This should deterministically produce each day's unique set of letters.
+const todays_date = new Date().toISOString().slice(0,10);
+const seed = cyrb128(todays_date);
+const get_rand = sfc32(...seed);
+
 const letter_container = document.querySelector("#letter-container");
 const submit_button    = document.querySelector("#submit-word");
 const backspace_button = document.querySelector("#backspace");
@@ -10,6 +16,8 @@ const clear_button     = document.querySelector("#clear-word");
 const typing_area      = document.querySelector("#typing-area");
 const debug_print_area = document.querySelector("#debug-print");
 const word_list        = document.querySelector("#word-list-container ul");
+
+const date_spans       = document.querySelectorAll(".todays-date");
 
 let letter_nodes; // Array
 let used_words = [];
@@ -30,6 +38,8 @@ function init() {
         letter_container.appendChild(letter_button);
     }
     letter_nodes = [...document.querySelectorAll(".letter")];
+
+    date_spans.forEach( (node) => node.textContent = todays_date );
 
     submit_button   .addEventListener("click", (e) => submit_word() );
     backspace_button.addEventListener("click", (e) => backspace() );
@@ -170,10 +180,58 @@ function random_weighted_selection(weights) {
     // The weight values need not add to 1, but they should be non-negative.
     
     total_weight = Object.values(weights).reduce( (sum, next) => sum += next, 0);
-    rand = Math.random() * total_weight;
+    rand = get_rand() * total_weight;
     for (const key of Object.keys(weights)) {
         if (rand < weights[key])
             return key;
         rand -= weights[key];
+    }
+}
+
+/*
+Hash generator function
+Source: https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
+*/
+function cyrb128(str) {
+    let h1 = 1779033703, h2 = 3144134277,
+        h3 = 1013904242, h4 = 2773480762;
+    for (let i = 0, k; i < str.length; i++) {
+        k = str.charCodeAt(i);
+        h1 = h2 ^ Math.imul(h1 ^ k, 597399067);
+        h2 = h3 ^ Math.imul(h2 ^ k, 2869860233);
+        h3 = h4 ^ Math.imul(h3 ^ k, 951274213);
+        h4 = h1 ^ Math.imul(h4 ^ k, 2716044179);
+    }
+    h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
+    h2 = Math.imul(h4 ^ (h2 >>> 22), 2869860233);
+    h3 = Math.imul(h1 ^ (h3 >>> 17), 951274213);
+    h4 = Math.imul(h2 ^ (h4 >>> 19), 2716044179);
+    h1 ^= (h2 ^ h3 ^ h4), h2 ^= h1, h3 ^= h1, h4 ^= h1;
+    return [h1>>>0, h2>>>0, h3>>>0, h4>>>0];
+}
+
+/*
+Seedable random number generator
+Source: https://stackoverflow.com/questions/521295/seeding-the-random-number-generator-in-javascript
+Use cyrb128(str) to generate the four seed numbers required.
+*/
+function sfc32(a, b, c, d) {
+  return function() {
+    a |= 0; b |= 0; c |= 0; d |= 0;
+    let t = (a + b | 0) + d | 0;
+    d = d + 1 | 0;
+    a = b ^ b >>> 9;
+    b = c + (c << 3) | 0;
+    c = (c << 21 | c >>> 11);
+    c = c + t | 0;
+    return (t >>> 0) / 4294967296;
+  }
+}
+
+function test_random(seed_string) {
+    const seed = cyrb128(seed_string);
+    const generate_random_number = sfc32(...seed);
+    for (let i = 0; i < 10; ++i) {
+        console.log(generate_random_number());
     }
 }

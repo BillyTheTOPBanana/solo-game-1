@@ -73,3 +73,12 @@ body {
 #debug-print {
     color: red;
 }
+
+.position-relative {
+    position: relative;
+}
+
+.wonk-effect {
+    position: absolute;
+    right: -15px;
+}
