@@ -17,9 +17,10 @@ body {
     display: box;
     height: var(--LETTER-SIZE);
     width: var(--LETTER-SIZE);
-    font-size: 42px;
+    /* font-size: clamp(3rem, 2.5rem + 2vw, 5rem); */
+    font-size: 3rem;
 
-    background-color: hsl(210, 100%, 98%);;
+    background-color: hsl(210, 100%, 98%);
 }
 
 .typed-letter {    
@@ -80,5 +81,24 @@ body {
 
 .wonk-effect {
     position: absolute;
-    right: -15px;
+    top: 123px;
+    left: -100px;
+    rotate: -30deg;
+
+    font-size: 2rem;
+
+    /* Fadeout code copied from Google AI since I have not reached the animation part of TOP's curriculum.  */
+
+    /* Runs for 1 second, waits .5 seconds first, and stays at 0 opacity */
+    animation: fadeOut 1s ease-out .5s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden; /* Hides it from screen readers and clicks after fading */
+    }
 }

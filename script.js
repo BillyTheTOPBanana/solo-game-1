@@ -19,6 +19,11 @@ const word_list        = document.querySelector("#word-list-container ul");
 
 const date_spans       = document.querySelectorAll(".todays-date");
 
+// Trying out a "HTML prototype" pattern for the wonk effects.
+// The prototype element in the HTML has attribute `hidden=""`
+// The script will copy from the prototype in order to generate more at runtime.
+const wonk_effect = document.querySelector(".wonk-effect");
+
 let letter_nodes; // Array
 let used_words = [];
 
@@ -137,6 +142,11 @@ function submit_word() {
 
     if (letter_nodes.every( letter => letter.classList.contains("banked-letter"))) {
         debug_print("WONK!");
+        const new_wonk_effect = wonk_effect.cloneNode(true);
+        new_wonk_effect.removeAttribute("hidden");
+        // @TODO: randomize appearance, especially positioning
+        wonk_effect.after(new_wonk_effect);
+        
         letter_nodes.forEach( letter => letter.classList.remove("banked-letter"));
     }
 }
